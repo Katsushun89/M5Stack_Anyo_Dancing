@@ -6,6 +6,8 @@
 #define RIGHT_ARM_PIN 22
 #define LEFT_ARM_PIN 21
 
+static bool is_pushued_stick_c = false;
+
 void initESPNow()
 {
   WiFi.disconnect();
@@ -39,6 +41,12 @@ void onDataRecv(const uint8_t *mac_addr, const uint8_t *data, int data_len) {
     Serial.print(""); Serial.print(data[i]);
   }
   Serial.println("");
+
+  if(data[0] == 1){
+    is_pushued_stick_c = true;
+  }else{
+    is_pushued_stick_c = false;
+  }
 }
 
 void setupESPNow()
@@ -79,27 +87,12 @@ void setup()
 
 void loop() {
   
-  if(M5.BtnA.wasPressed())
-  {
-    M5.Lcd.clear(BLACK);
-    M5.Lcd.setCursor(0, 0);
-    M5.Lcd.println("LEFT:ON");
+  if(is_pushued_stick_c){
     digitalWrite(LEFT_ARM_PIN, 1);
-  }
-  if(M5.BtnB.wasPressed())
-  {
-    M5.Lcd.clear(BLACK);
-    M5.Lcd.setCursor(0, 0);
-    M5.Lcd.println("BOTH:OFF");
+    digitalWrite(RIGHT_ARM_PIN, 1);
+  }else{
     digitalWrite(RIGHT_ARM_PIN, 0);
     digitalWrite(LEFT_ARM_PIN, 0);
-  }
-  if(M5.BtnC.wasPressed())
-  {
-    M5.Lcd.clear(BLACK);
-    M5.Lcd.setCursor(0, 0);
-    M5.Lcd.println("RIGHT:ON");
-    digitalWrite(RIGHT_ARM_PIN, 1);
   }
   
   delay(100);
