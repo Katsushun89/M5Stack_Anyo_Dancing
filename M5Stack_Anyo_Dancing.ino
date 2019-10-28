@@ -9,7 +9,7 @@
 #define RIGHT_ARM_PIN 22
 #define LEFT_ARM_PIN 21
 
-bool is_pushued_stick_c = false;
+bool is_pushued_by_controller = false;
 
 using namespace m5avatar;
 
@@ -66,9 +66,9 @@ void onDataRecv(const uint8_t *mac_addr, const uint8_t *data, int data_len) {
   Serial.println("");
 
   if(data[0] == 1){
-    is_pushued_stick_c = true;
+    is_pushued_by_controller = true;
   }else{
-    is_pushued_stick_c = false;
+    is_pushued_by_controller = false;
   }
 }
 
@@ -121,7 +121,7 @@ void setup()
 void loop() {
   
   M5.update();
-  if(is_pushued_stick_c){
+  if(is_pushued_by_controller){
     digitalWrite(LEFT_ARM_PIN, 1);
     digitalWrite(RIGHT_ARM_PIN, 1);
   }else{
