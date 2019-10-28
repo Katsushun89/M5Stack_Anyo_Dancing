@@ -1,12 +1,35 @@
 #include <M5Stack.h>
 #include <esp_now.h>
 #include <WiFi.h>
+#include <Avatar.h>
+#include <faces/BMPFace.h>
+
 #define CHANNEL 1
 
 #define RIGHT_ARM_PIN 22
 #define LEFT_ARM_PIN 21
 
-static bool is_pushued_stick_c = false;
+bool is_pushued_stick_c = false;
+
+using namespace m5avatar;
+
+Avatar avatar;
+
+Face* faces[1];
+const int facesSize = sizeof(faces) / sizeof(Face*);
+
+const Expression expressions[] = {
+  Expression::Angry,
+  Expression::Sleepy,
+  Expression::Happy,
+  Expression::Sad,
+  Expression::Doubt,
+  Expression::Neutral
+};
+const int expressionsSize = sizeof(expressions) / sizeof(Expression);
+int expr_idx = 0;
+
+ColorPalette* cps[1];
 
 void initESPNow()
 {
@@ -76,17 +99,28 @@ void setup()
   delay(500);
   M5.begin();
   
-  M5.Lcd.fillScreen(BLACK);
-  M5.Lcd.setTextColor(GREEN);
-  M5.Lcd.setTextSize(2);
+  //M5.Lcd.fillScreen(BLACK);
+  //M5.Lcd.setTextColor(GREEN);
+  //M5.Lcd.setTextSize(2);
+  M5.Lcd.clear();
 
   setupVibrationMotor();
 
   setupESPNow();
+
+  //avator face
+  faces[0] = new BMPFace();
+  avatar.setFace(faces[0]);
+
+  cps[0] = new ColorPalette();
+  
+  avatar.init();
+  avatar.setColorPalette(*cps[0]);
 }
 
 void loop() {
   
+  M5.update();
   if(is_pushued_stick_c){
     digitalWrite(LEFT_ARM_PIN, 1);
     digitalWrite(RIGHT_ARM_PIN, 1);
@@ -96,5 +130,4 @@ void loop() {
   }
   
   delay(100);
-  M5.update();
 }
