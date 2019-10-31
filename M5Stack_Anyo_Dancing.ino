@@ -118,15 +118,48 @@ void setup()
   avatar.setColorPalette(*cps[0]);
 }
 
+bool checkIntervalFlag()
+{
+  static bool flag = false;
+  const int32_t INTERVAL_TIME = 500;
+  int32_t cur_time = millis();
+  static int32_t pre_check_time = 0;
+
+  int32_t diff_time = cur_time - pre_check_time;
+  if(diff_time >= INTERVAL_TIME){
+      pre_check_time = cur_time;
+      flag = !flag;
+  }
+
+  return flag;
+}
+
+void tryWalk()
+{
+  if(checkIntervalFlag()){
+    //LEFT
+    digitalWrite(LEFT_ARM_PIN, 1);
+    digitalWrite(RIGHT_ARM_PIN, 0);
+  }else{
+    //RIGHT
+    digitalWrite(LEFT_ARM_PIN, 0);
+    digitalWrite(RIGHT_ARM_PIN, 1);
+  }
+}
+
+void stopWalk()
+{
+  digitalWrite(RIGHT_ARM_PIN, 0);
+  digitalWrite(LEFT_ARM_PIN, 0);
+}
+
 void loop() {
   
   M5.update();
   if(is_pushued_by_controller){
-    digitalWrite(LEFT_ARM_PIN, 1);
-    digitalWrite(RIGHT_ARM_PIN, 1);
+    tryWalk();
   }else{
-    digitalWrite(RIGHT_ARM_PIN, 0);
-    digitalWrite(LEFT_ARM_PIN, 0);
+    stopWalk();
   }
   
   delay(100);
